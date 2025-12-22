@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cors());
 app.use(helmet()); // Security Headers
 app.use(morgan('dev'));
-
+ 
 // Routes
 app.use('/api/auth', authRoutes);
 
