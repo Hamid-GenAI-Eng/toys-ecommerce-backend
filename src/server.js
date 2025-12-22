@@ -23,8 +23,13 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+app.options('*', cors(corsOptions)); 
+
 // Security Headers
-app.use(helmet()); 
+app.use(helmet({
+  crossOriginResourcePolicy: false, // Allows your frontend to access resources
+  crossOriginEmbedderPolicy: false
+}));
 
 // Logger (for debugging)
 app.use(morgan('dev'));
