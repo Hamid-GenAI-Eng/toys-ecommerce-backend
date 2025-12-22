@@ -1,21 +1,49 @@
-const app = require('./app');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const seedAdmin = require('./utils/seeder'); // Import seeder
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
 
-dotenv.config();
+// Import Routes
+const authRoutes = require('./modules/auth/auth.routes');
 
-const PORT = process.env.PORT || 5000;
+const app = express();
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(async () => {
-    console.log('MongoDB Connected');
-    
-    // Run Admin Seeder
-    await seedAdmin();
+// --- 1. Security & Configuration Middleware (Top Level) ---
 
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => console.log(err));
+// CORS Configuration
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",             // Local Development (Vite)
+    "https://playful-pixels.vercel.app"  // Production Frontend
+  ],
+  credentials: true, // Allows sending cookies/authorization headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
+// Security Headers
+app.use(helmet()); 
+
+// Logger (for debugging)
+app.use(morgan('dev'));
+
+// Body Parser (to read JSON inputs)
+app.use(express.json());
+
+// --- 2. Routes ---
+app.use('/api/auth', authRoutes);
+
+// Health Check Route
+app.get('/', (req, res) => {
+  res.send('TechMall API is running...');
+});
+
+// --- 3. Global Error Handler (Optional but Recommended) ---
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Internal Server Error' });
+});
+
+module.exports = app;
