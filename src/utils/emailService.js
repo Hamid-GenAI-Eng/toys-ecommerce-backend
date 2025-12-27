@@ -1,15 +1,19 @@
 const nodemailer = require('nodemailer');
+const dotenv = require('dotenv'); 
+
+dotenv.config();
 
 const sendEmail = async (options) => {
   // Create transporter (Use environment variables for credentials)
   console.log("EMAIL_USER:", process.env.EMAIL_USER);
-  console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "EXISTS" : "MISSING");
+  console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
 
   const transporter = nodemailer.createTransport({
     service: 'gmail', // or your SMTP provider
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS // For Gmail, use App Password
+      // ⚠️ HARDCODE YOUR CREDENTIALS HERE TEMPORARILY ⚠️
+      user: 'hamidsaif214@gmail.com',
+      pass: 'oaggtwmhgvdmdgpx' // For Gmail, use App Password
     }
   });
 

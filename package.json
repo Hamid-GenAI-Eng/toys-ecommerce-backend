@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
+    "dev": "nodemon src/server.js",              
+    "sls:offline": "serverless offline",         
+    "deploy": "serverless deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,6 +16,7 @@
   "type": "commonjs",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
@@ -21,13 +24,20 @@
     "google-auth-library": "^10.5.0",
     "helmet": "^8.1.0",
     "joi": "^18.0.2",
+    "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.2",
     "morgan": "^1.10.1",
-    "nodemailer": "^7.0.11" 
+    "multer": "^2.0.2",
+    "multer-storage-cloudinary": "^4.0.0",
+    "nodemailer": "^7.0.11",
+    "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-http": "^4.0.0",
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "serverless-offline": "^14.4.0"
   },
   "overrides": {
     "gcp-metadata": "^8.1.2"

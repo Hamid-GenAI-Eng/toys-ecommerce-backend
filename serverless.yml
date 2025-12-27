@@ -1,0 +1,43 @@
+service: techmall-backend
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1      # Change to your preferred region
+  stage: dev
+  memorySize: 512        # 512MB RAM (Good balance for Node apps)
+  timeout: 15            # 15 seconds timeout
+  environment:
+    # Map these to your local .env or GitHub Secrets
+    MONGO_URI: ${env:MONGO_URI}
+    JWT_SECRET: ${env:JWT_SECRET}
+    CLOUDINARY_CLOUD_NAME: ${env:CLOUDINARY_CLOUD_NAME}
+    CLOUDINARY_API_KEY: ${env:CLOUDINARY_API_KEY}
+    CLOUDINARY_API_SECRET: ${env:CLOUDINARY_API_SECRET}
+    NODE_ENV: production
+
+  # Important: Allow binary media for file uploads
+  apiGateway:
+    binaryMediaTypes:
+      - 'multipart/form-data'
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-offline
+
+functions:
+  api:
+    handler: handler.api
+    events:
+      - http:
+          path: / # Matches base url
+          method: ANY
+          cors: true
+      - http:
+          path: /{proxy+} # Matches any route (e.g., /api/products)
+          method: ANY
+          cors: true
+
+custom:
+  serverless-offline:
+    httpPort: 5000
