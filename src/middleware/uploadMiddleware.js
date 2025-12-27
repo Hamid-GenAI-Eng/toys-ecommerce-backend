@@ -2,14 +2,24 @@ const multer = require('multer');
 const { storage } = require('../config/cloudinary');
 
 const upload = multer({ 
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 } // Limit: 10MB (Adjust based on Cloudinary plan)
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
 
-// Config for handling multiple fields
-const productUpload = upload.fields([
-  { name: 'images', maxCount: 5 }, // Allow up to 5 product images
-  { name: 'video', maxCount: 1 }   // Allow 1 video
-]);
+const productUpload = (req, res, next) => {
+  const handler = upload.fields([
+    { name: 'images', maxCount: 5 },
+    { name: 'video', maxCount: 1 }
+  ]);
+
+  handler(req, res, function (err) {
+    if (err) {
+      return res.status(400).json({
+        message: err.message || 'File upload failed'
+      });
+    }
+    next();
+  });
+};
 
 module.exports = productUpload;

@@ -6,6 +6,8 @@ const authRoutes = require('./modules/auth/auth.routes');
 const productRoutes = require('./modules/products/product.routes');
 const productPublicRoutes = require('./modules/products/product.public.routes');
 const wishlistRoutes = require('./modules/wishlist/wishlist.routes');
+const cartRoutes = require('./modules/cart/cart.routes');
+const orderRoutes = require('./modules/orders/order.routes');
 
 const app = express();
 
@@ -28,6 +30,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin/products', productRoutes);
 app.use('/api/products', productPublicRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
 
 app.get('/', (req, res) => {
   res.send('TechMall Auth Service (Lambda) is running...');

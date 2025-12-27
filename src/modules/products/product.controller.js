@@ -98,49 +98,50 @@ exports.getProducts = async (req, res) => {
 
 // @desc    Create New Product
 // @route   POST /api/admin/products
+// @desc    Create New Product
+// @route   POST /api/admin/products
 exports.createProduct = async (req, res) => {
   try {
-    // 1. Handle File Uploads (From Cloudinary Middleware)
+    // 1. Handle File Uploads Safely
     let imageUrls = [];
     let videoUrl = '';
 
+    // Check if files exist (Important fix)
     if (req.files) {
-      if (req.files.images) {
+      if (req.files.images && req.files.images.length > 0) {
         imageUrls = req.files.images.map(file => file.path);
       }
-      if (req.files.video) {
+      if (req.files.video && req.files.video.length > 0) {
         videoUrl = req.files.video[0].path;
       }
     }
 
-    // 2. Prepare Data for Validation
-    // Joi expects data in req.body, so we merge file URLs into it
+    // 2. Prepare Data
+    // Spread req.body first, then overwrite images/video
     const productData = {
       ...req.body,
       images: imageUrls,
       video: videoUrl
     };
 
-    // Parse 'features' if it comes as a stringified JSON (common in FormData)
-    if (typeof productData.features === 'string') {
+    // Parse 'features' if it comes as a string (from FormData)
+    if (productData.features && typeof productData.features === 'string') {
       try {
         productData.features = JSON.parse(productData.features);
       } catch (e) {
         return res.status(400).json({ message: 'Invalid format for features' });
       }
     }
- 
+
     // 3. Validation
     const { error } = productJoiSchema.validate(productData);
-    if (error) {
-      // Optional: Delete uploaded files from Cloudinary if validation fails to save space
-      return res.status(400).json({ message: error.details[0].message });
-    }
+    if (error) return res.status(400).json({ message: error.details[0].message });
 
+    // 4. Check SKU
     const skuExists = await Product.findOne({ sku: productData.sku });
     if (skuExists) return res.status(400).json({ message: 'SKU already exists' });
 
-    // 4. Save to DB
+    // 5. Create Product (Triggers the fixed pre-save hook)
     const newProduct = await Product.create(productData);
 
     res.status(201).json({
@@ -148,7 +149,9 @@ exports.createProduct = async (req, res) => {
       message: 'Product created successfully',
       data: newProduct
     });
+
   } catch (error) {
+    console.error("Create Product Error:", error); // Log real error to terminal
     res.status(500).json({ message: error.message });
   }
 };

@@ -68,20 +68,20 @@ productSchema.virtual('status').get(function() {
   return 'in-stock';
 });
 
+
 // Middleware: Auto-generate Slug and Calculate Discount
-productSchema.pre('save', function(next) {
+productSchema.pre('save', async function() {
   // 1. Generate Slug if missing
   if (!this.url_slug && this.product_name) {
     this.url_slug = slugify(this.product_name, { lower: true, strict: true });
   }
 
-  // 2. Calculate Discount Percentage if sale price exists
+  // 2. Calculate Discount Percentage
   if (this.on_sale && this.sale_price && this.original_price) {
     this.discount_percentage = Math.round(
       ((this.original_price - this.sale_price) / this.original_price) * 100
     );
   }
-  next();
 });
 
 module.exports = mongoose.model('Product', productSchema);

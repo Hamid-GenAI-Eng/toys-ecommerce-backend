@@ -5,7 +5,6 @@ const User = require('../modules/auth/user.model');
 exports.protect = async (req, res, next) => {
   let token;
 
-  // Check for "Bearer <token>" in header
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       // Get token from header
@@ -21,15 +20,17 @@ exports.protect = async (req, res, next) => {
         return res.status(401).json({ message: 'Not authorized, user not found' });
       }
 
-      next(); // Move to next middleware
+      next(); // Proceed to next middleware
+      return; // <--- ADD THIS: Stop execution here
+
     } catch (error) {
       console.error(error);
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      return res.status(401).json({ message: 'Not authorized, token failed' }); // <--- ADD Return
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
+    return res.status(401).json({ message: 'Not authorized, no token' }); // <--- ADD Return
   }
 };
 
